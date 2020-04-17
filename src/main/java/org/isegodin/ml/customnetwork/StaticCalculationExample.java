@@ -75,13 +75,24 @@ public class StaticCalculationExample {
         double dTotalE_dW5 = dTotalE_dO1Out * dO1Out_dO1Net * dO1Net_dW5;
         double dTotalE_dW6 = dTotalE_dO1Out * dO1Out_dO1Net * dO1Net_dW6;
 
-
-
         double w5_ = w5 - alpha * dTotalE_dW5; // 0.3589
         double w6_ = w6 - alpha * dTotalE_dW6; // 0.4086
 
-        //w7 0.5113
-        //w8 0.5613
+        double dTotalE_dO2Out = -(t2 - o2Out);
+        double dO2Out_dO2Net = activationFuncDerivative(o2Out);
+        double dO2Net_dW7 = h1Out;
+        double dO2Net_dW8 = h2Out;
+        double dTotalE_dW7 = dTotalE_dO2Out * dO2Out_dO2Net * dO2Net_dW7;
+        double dTotalE_dW8 = dTotalE_dO2Out * dO2Out_dO2Net * dO2Net_dW8;
+
+        double w7_ = w7 - alpha * dTotalE_dW7; // 0.5113
+        double w8_ = w8 - alpha * dTotalE_dW8; // 0.5613
+
+        //------Back propagation for Hidden Layer 1
+
+//        double dTotalE_dW1 = dtotalE_dH1Out * dH1Out_dH1Net * dH1Net_dW1
+
+
 
 
         System.out.println();

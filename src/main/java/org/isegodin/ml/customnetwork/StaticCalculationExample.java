@@ -90,9 +90,34 @@ public class StaticCalculationExample {
 
         //------Back propagation for Hidden Layer 1
 
-//        double dTotalE_dW1 = dtotalE_dH1Out * dH1Out_dH1Net * dH1Net_dW1
+
+//        double o1Net = w5 * h1Out + w6 * h2Out + b2I * b2W;
 
 
+        double dH1Net_dW1 = i1;
+
+        double dH1Out_dH1Net = activationFuncDerivative(h1Out); // 0.2413
+
+
+
+        double dO1E_dO1Out = dTotalE_dO1Out; // 0.7413 // ?
+        double dO1E_dO1Net = dO1E_dO1Out * dO1Out_dO1Net; // 0.1384
+        double dO1Net_dH1Out = w5;
+        double dO1E_dH1Out = dO1E_dO1Net * dO1Net_dH1Out; // 0.05539
+
+        // -------- TODO
+
+
+//        double dO2E_dO2Out = dTotalE_dO2Out; // ?
+//        double dO2E_dO1Net = dO2E_dO2Out * dO2Out_dO2Net;
+//        double dO2Net_dH2Out = w6;
+//        double dO2E_dH1Out = dO2E_dO1Net * dO1Net_dH1Out; // -0.01904
+        double dO2E_dH1Out = 0; // -0.01904
+
+        // --------
+
+        double dTotalE_dH1Out = dO1E_dH1Out + dO2E_dH1Out; // 0.03635
+        double dTotalE_dW1 = dTotalE_dH1Out * dH1Out_dH1Net * dH1Net_dW1; // 0.0004385
 
 
         System.out.println();
@@ -104,9 +129,9 @@ public class StaticCalculationExample {
 
     /**
      * F(x) * (1 - F(x))
-     *
+     * <p>
      * F - activation function
-     *
+     * <p>
      * F(x) - previous output value
      */
     private static double activationFuncDerivative(double outValue) {

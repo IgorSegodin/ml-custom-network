@@ -2,16 +2,19 @@ package org.isegodin.ml.customnetwork;
 
 import lombok.SneakyThrows;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
+
 /**
  * @author isegodin
  */
 public class StaticCalculationExample {
 
     /*
-
-    (i1)  (h1)  (o1)
-    (i2)  (h2)  (o2)
-    (b1)  (b2)
+        (i1)  (h1)  (o1)
+        (i2)  (h2)  (o2)
+        (b1)  (b2)
      */
 
     @SneakyThrows
@@ -91,33 +94,30 @@ public class StaticCalculationExample {
         //------Back propagation for Hidden Layer 1
 
 
-//        double o1Net = w5 * h1Out + w6 * h2Out + b2I * b2W;
-
-
-        double dH1Net_dW1 = i1;
-
         double dH1Out_dH1Net = activationFuncDerivative(h1Out); // 0.2413
-
-
 
         double dO1E_dO1Out = dTotalE_dO1Out; // 0.7413 // ?
         double dO1E_dO1Net = dO1E_dO1Out * dO1Out_dO1Net; // 0.1384
         double dO1Net_dH1Out = w5;
         double dO1E_dH1Out = dO1E_dO1Net * dO1Net_dH1Out; // 0.05539
 
-        // -------- TODO
+        double dO2E_dO2Out = dTotalE_dO2Out; // ?
+        double dO2E_dO2Net = dO2E_dO2Out * dO2Out_dO2Net;
+        double dO2Net_dH1Out = w7;
+        double dO2E_dH1Out = dO2E_dO2Net * dO2Net_dH1Out; // -0.019049
 
-
-//        double dO2E_dO2Out = dTotalE_dO2Out; // ?
-//        double dO2E_dO1Net = dO2E_dO2Out * dO2Out_dO2Net;
-//        double dO2Net_dH2Out = w6;
-//        double dO2E_dH1Out = dO2E_dO1Net * dO1Net_dH1Out; // -0.01904
-        double dO2E_dH1Out = 0; // -0.01904
-
-        // --------
-
+        double dH1Net_dW1 = i1;
+        double dH1Net_dW2 = i2;
         double dTotalE_dH1Out = dO1E_dH1Out + dO2E_dH1Out; // 0.03635
         double dTotalE_dW1 = dTotalE_dH1Out * dH1Out_dH1Net * dH1Net_dW1; // 0.0004385
+        double dTotalE_dW2 = dTotalE_dH1Out * dH1Out_dH1Net * dH1Net_dW2; // 0.0004385
+
+        double w1_ = w1 - alpha * dTotalE_dW1; // 0.1497807
+        double w2_ = w2 - alpha * dTotalE_dW2; // 0.19956143
+
+        // TODO
+        double w3_ = 0;
+        double w4_ = 0;
 
 
         System.out.println();
@@ -136,5 +136,11 @@ public class StaticCalculationExample {
      */
     private static double activationFuncDerivative(double outValue) {
         return outValue * (1 - outValue);
+    }
+
+    private static String displaySmallDouble(double value) {
+        return new BigDecimal(value, MathContext.DECIMAL64)
+                .setScale(8, RoundingMode.HALF_UP)
+                .toString();
     }
 }

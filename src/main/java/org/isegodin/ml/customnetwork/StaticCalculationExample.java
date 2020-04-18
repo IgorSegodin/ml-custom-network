@@ -115,9 +115,22 @@ public class StaticCalculationExample {
         double w1_ = w1 - alpha * dTotalE_dW1; // 0.1497807
         double w2_ = w2 - alpha * dTotalE_dW2; // 0.19956143
 
-        // TODO
-        double w3_ = 0;
-        double w4_ = 0;
+        double dH2Out_dH2Net = activationFuncDerivative(h2Out);
+
+        double dO1Net_dH2Out = w6;
+        double dO1E_dH2Out = dO1E_dO1Net * dO1Net_dH2Out;
+
+        double dO2Net_dH2Out = w8;
+        double dO2E_dH2Out = dO2E_dO2Net * dO2Net_dH2Out;
+
+        double dH2Net_dW3 = i1;
+        double dH2Net_dW4 = i2;
+        double dTotalE_dH2Out = dO1E_dH2Out + dO2E_dH2Out;
+        double dTotalE_dW3 = dTotalE_dH2Out * dH2Out_dH2Net * dH2Net_dW3;
+        double dTotalE_dW4 = dTotalE_dH2Out * dH2Out_dH2Net * dH2Net_dW4;
+
+        double w3_ = w3 - alpha * dTotalE_dW3; // 0.2497
+        double w4_ = w4 - alpha * dTotalE_dW4; // 0.2995
 
 
         System.out.println();

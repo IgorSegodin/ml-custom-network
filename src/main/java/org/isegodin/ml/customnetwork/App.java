@@ -5,6 +5,7 @@ import lombok.SneakyThrows;
 import org.isegodin.ml.customnetwork.calc.NeuralNetworkResultCalculator;
 import org.isegodin.ml.customnetwork.data.NeuralNetworkData;
 import org.isegodin.ml.customnetwork.data.FeedforwardResultData;
+import org.isegodin.ml.customnetwork.train.NeuralNetworkBackpropagationAlgorithm;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -36,5 +37,9 @@ public class App {
         System.out.println(calcResult);
         System.out.println("Expected: " + Arrays.toString(expectedOut));
         System.out.println("Actual:   " + Arrays.toString(calcResult.getFinalOut()));
+
+
+        NeuralNetworkBackpropagationAlgorithm.train(new double[]{0.01, 0.99}, calcResult, neuralNetworkData, 0.5);
+
     }
 }

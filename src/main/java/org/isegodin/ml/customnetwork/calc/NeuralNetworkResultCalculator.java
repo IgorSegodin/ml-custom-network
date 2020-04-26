@@ -41,7 +41,7 @@ public class NeuralNetworkResultCalculator {
             layerResult[l] = new FeedforwardResultData.LayerResultData(layerNetResult, layerOutResult);
         }
 
-        return new FeedforwardResultData(layerResult);
+        return new FeedforwardResultData(input, layerResult);
     }
 
     private static double calcNodeNet(double[] input, double weightedBias, NeuralNetworkData.Node node) {

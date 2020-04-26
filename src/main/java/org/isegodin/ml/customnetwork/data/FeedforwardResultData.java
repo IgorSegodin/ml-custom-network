@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class FeedforwardResultData {
 
+    private final double[] input;
+
     private final LayerResultData[] layerData;
 
     public double[] getFinalOut() {

@@ -9,7 +9,10 @@ import org.isegodin.ml.customnetwork.data.NeuralNetworkData;
  */
 public class NeuralNetworkBackpropagationAlgorithm {
 
-    public static void train(double[] target, FeedforwardResultData resultData, NeuralNetworkData networkData, double learningRate) {
+    /**
+     * @return total error
+     */
+    public static double train(double[] target, FeedforwardResultData resultData, NeuralNetworkData networkData, double learningRate) {
 
         // (layer, input)
         double[][] layerWeightedNodeErrorSum = new double[networkData.getLayers().length][];
@@ -73,6 +76,17 @@ public class NeuralNetworkBackpropagationAlgorithm {
 
             layerWeightedNodeErrorSum[l] = weightedSum;
         }
+
+        double totalError = 0;
+
+        for (int i = 0; i < resultData.getFinalOut().length; i++) {
+            double t = target[i];
+            double o = resultData.getFinalOut()[i];
+
+            totalError += Math.pow(t - o, 2) / 2;
+        }
+
+        return totalError;
     }
 
 }

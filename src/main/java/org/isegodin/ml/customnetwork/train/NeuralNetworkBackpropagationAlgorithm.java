@@ -1,8 +1,8 @@
 package org.isegodin.ml.customnetwork.train;
 
 import org.isegodin.ml.customnetwork.data.ActivationFunctions;
-import org.isegodin.ml.customnetwork.data.NeuralNetworkData;
 import org.isegodin.ml.customnetwork.data.FeedforwardResultData;
+import org.isegodin.ml.customnetwork.data.NeuralNetworkData;
 
 /**
  * @author isegodin
@@ -11,15 +11,20 @@ public class NeuralNetworkBackpropagationAlgorithm {
 
     public static void train(double[] target, FeedforwardResultData resultData, NeuralNetworkData networkData, double learningRate) {
 
-
+        // (layer, input)
+        double[][] layerWeightedNodeErrorSum = new double[networkData.getLayers().length][];
 
         for (int l = networkData.getLayers().length - 1; l >= 0; l--) {
             NeuralNetworkData.Layer layer = networkData.getLayers()[l];
 
-//            double[] weightedNodeErrors = new double[networkData.getLayers().length];
+            // (node, input)
+            double[][] weightedNodeErrors = new double[layer.getNodes().length][];
 
             for (int n = 0; n < layer.getNodes().length; n++) {
                 NeuralNetworkData.Node node = layer.getNodes()[n];
+
+                // (input)
+                double[] weightedErrors = new double[node.getWeights().length];
 
                 double nodeError;
 
@@ -32,7 +37,7 @@ public class NeuralNetworkBackpropagationAlgorithm {
                     nodeError = (nodeTarget - nodeOut) * derivativeNodeOut;
                 } else {
 
-                    nodeError = sum * derivativeNodeOut;
+                    nodeError = layerWeightedNodeErrorSum[l + 1][n] * derivativeNodeOut;
                 }
 
                 for (int i = 0; i < node.getWeights().length; i++) {
@@ -43,43 +48,31 @@ public class NeuralNetworkBackpropagationAlgorithm {
 
                     double weight = node.getWeights()[i];
 
+                    weightedErrors[i] = nodeError * weight;
+
                     node.getWeights()[i] = weight + learningRate * deltaWeight;
                 }
+
+                weightedNodeErrors[n] = weightedErrors;
             }
 
+            // Calc weighted sum
 
+            int inputNumber = weightedNodeErrors[0].length;
 
-            break;
-            // TODO how to calc currentTarget for previous layer
-//            currentTarget = ...;
+            double[] weightedSum = new double[inputNumber];
+
+            for (int i = 0; i < inputNumber; i++) {
+                double sum = 0;
+
+                for (int n = 0; n < weightedNodeErrors.length; n++) {
+                    sum += weightedNodeErrors[n][i];
+                }
+                weightedSum[i] = sum;
+            }
+
+            layerWeightedNodeErrorSum[l] = weightedSum;
         }
-
-
-        /*
-
-            k - node idx
-            t - node target
-            O - node real out
-            nodeError=(t - O)*deriv(O)
-
-            // input - previous layer node output, for specified weight
-            deltaWeight = learningRate * nodeError * input
-
-
-            // hidden
-            nodeError=(t - O) * O * Sum(weigtedNodeError)
-            where the Sum term adds the weighted error signal for all nodes, k,  in the output layer.
-
-
-
-            hiddenError = deriv(h1Out) * dTotalE_dH1Out * input
-
-
-                dTotalE_dH1Out (sum) = (t1 - o1Out) * deriv(O1) * w5(Out)
-                                            + (t2 - o2Out) * deriv(O2) * w7(Out)
-
-         */
-
     }
 
 }

@@ -19,8 +19,6 @@ public class NeuralNetworkData {
     @NoArgsConstructor
     public static class Layer {
         private Node[] nodes;
-
-        private double weightedBias;
     }
 
     @Data

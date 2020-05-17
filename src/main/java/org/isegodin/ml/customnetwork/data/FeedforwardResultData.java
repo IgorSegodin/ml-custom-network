@@ -22,7 +22,6 @@ public class FeedforwardResultData {
     @RequiredArgsConstructor
     public static class LayerResultData {
 
-        private final double[] net;
         private final double[] out;
 
     }

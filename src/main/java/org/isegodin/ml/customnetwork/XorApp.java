@@ -20,8 +20,8 @@ public class XorApp {
 
     @SneakyThrows
     public static void main(String[] args) {
-        Supplier<NeuralNetworkData> networkInitializer = () -> NetworkBuilder.builder(2, 1, -0.5)
-                .addLayer(2, 0.5)
+        Supplier<NeuralNetworkData> networkInitializer = () -> NetworkBuilder.builder(2, 1)
+                .addLayer(2)
                 .build();
 
         NeuralNetworkData neuralNetworkData = networkInitializer.get();
@@ -38,6 +38,7 @@ public class XorApp {
         double error = 1;
 
         int count = 0;
+        int resetCount = 0;
 
         while (error > 0.01) {
             double avgError = 0;
@@ -47,17 +48,16 @@ public class XorApp {
                 avgError += NeuralNetworkBackpropagationAlgorithm.train(d.getTarget(), calcResult, neuralNetworkData, alpha);
             }
             error = avgError / trainData.size();
-            System.out.println(error);
             count++;
             if (count > 100000) {
                 count = 0;
                 error = 1;
+                resetCount++;
                 neuralNetworkData = networkInitializer.get();
-                System.out.println("Reset");
             }
         }
 
-        System.out.println("Result after " + count);
+        System.out.println("Result after iterations:" + count + ", reset count: " + resetCount + ", error: " + error);
 
         for (TrainData d : trainData) {
             System.out.println(Arrays.toString(NeuralNetworkResultCalculator.calcResult(d.getInput(), neuralNetworkData).getFinalOut()));

@@ -8,44 +8,6 @@
 * [Explanation with example 3](https://techburst.io/understanding-backpropagation-56f0d32a3084)
 * [Explanation with example 4](https://towardsdatascience.com/everything-you-need-to-know-about-neural-networks-and-backpropagation-machine-learning-made-easy-e5285bc2be3a)
 
-```java
-/*
-        Assign all network inputs and output
-        Initialize all weights with small random numbers, typically between -1 and 1
+https://github.com/Elco-/SimpleNN
 
-        repeat
-
-            for every pattern in the training set
-
-                Present the pattern to the network
-
-        //        Propagated the input forward through the network:
-                    for each layer in the network
-                        for every node in the layer
-                            1. Calculate the weight sum of the inputs to the node
-                            2. Add the threshold to the sum
-                            3. Calculate the activation for the node
-                        end
-                    end
-
-        //        Propagate the errors backward through the network
-                     for every node in the output layer
-                        calculate the error signal
-                    end
-
-                    for all hidden layers
-                        for every node in the layer
-                            1. Calculate the node's signal error
-                            2. Update each node's weight in the network
-                        end
-                    end
-
-        //        Calculate Global Error
-                    Calculate the Error Function
-
-            end
-
-        while ((maximum  number of iterations < than specified) AND
-                  (Error Function is > than specified))
-     */
-```
+https://github.com/pjreddie/mnist-csv-png

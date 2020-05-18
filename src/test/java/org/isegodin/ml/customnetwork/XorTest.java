@@ -2,24 +2,27 @@ package org.isegodin.ml.customnetwork;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.isegodin.ml.customnetwork.calc.NeuralNetworkResultCalculator;
 import org.isegodin.ml.customnetwork.data.FeedforwardResultData;
 import org.isegodin.ml.customnetwork.data.NetworkBuilder;
 import org.isegodin.ml.customnetwork.data.NeuralNetworkData;
 import org.isegodin.ml.customnetwork.train.NeuralNetworkBackpropagationAlgorithm;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 /**
  * @author isegodin
  */
-public class XorApp {
+class XorTest {
 
-    @SneakyThrows
-    public static void main(String[] args) {
+    @Test
+    void testSuccess() {
+
         Supplier<NeuralNetworkData> networkInitializer = () -> NetworkBuilder.builder(2, 1)
                 .addLayer(2)
                 .build();
@@ -33,35 +36,82 @@ public class XorApp {
                 new TrainData(new double[]{1, 0}, new double[]{1})
         );
 
+        double maxAllowedError = 0.05;
+        double maxIterationsBeforeResetWeights = 100000;
+        double maxResetCount = 2;
+
         double alpha = 0.5;
 
-        double error = 1;
+        double error = maxAllowedError + 1;
 
         int count = 0;
         int resetCount = 0;
 
-        while (error > 0.01) {
+        boolean first = true;
+
+        while (error > maxAllowedError) {
             double avgError = 0;
             for (TrainData d : trainData) {
                 FeedforwardResultData calcResult = NeuralNetworkResultCalculator.calcResult(d.getInput(), neuralNetworkData);
 
                 avgError += NeuralNetworkBackpropagationAlgorithm.train(d.getTarget(), calcResult, neuralNetworkData, alpha);
             }
-            error = avgError / trainData.size();
+
+            double newError = avgError / trainData.size();
+
+            if (!first) {
+
+                alpha += alpha * (error - newError) / error * -1;
+
+                alpha = Math.min(0.5, alpha);
+            }
+//            System.out.println(alpha);
+
+            error = newError;
+
+            first = false;
+
             count++;
-            if (count > 100000) {
+            if (count > maxIterationsBeforeResetWeights) {
+                alpha = 0.5;
                 count = 0;
-                error = 1;
+                error = maxAllowedError + 1;
                 resetCount++;
                 neuralNetworkData = networkInitializer.get();
             }
+            if (resetCount > maxResetCount) {
+                throw new IllegalStateException("To many weight resets " + resetCount);
+            }
         }
 
-        System.out.println("Result after iterations:" + count + ", reset count: " + resetCount + ", error: " + error);
+        System.out.println("Result after iterations:" + count + ", reset count: " + resetCount + ", error: " + error + ", alpha: " + alpha);
 
-        for (TrainData d : trainData) {
-            System.out.println(Arrays.toString(NeuralNetworkResultCalculator.calcResult(d.getInput(), neuralNetworkData).getFinalOut()));
-        }
+        assertEquals(
+                0,
+                calcResult(0, 0, neuralNetworkData)
+        );
+
+        assertEquals(
+                1,
+                calcResult(0, 1, neuralNetworkData)
+        );
+
+        assertEquals(
+                1,
+                calcResult(1, 0, neuralNetworkData)
+        );
+
+        assertEquals(
+                0,
+                calcResult(1, 1, neuralNetworkData)
+        );
+
+    }
+
+    private int calcResult(int a, int b, NeuralNetworkData neuralNetworkData) {
+        double[] out = NeuralNetworkResultCalculator.calcResult(new double[]{a, b}, neuralNetworkData).getFinalOut();
+
+        return Long.valueOf(Math.round(out[0])).intValue();
     }
 
     @Data
@@ -70,4 +120,5 @@ public class XorApp {
         private final double[] input;
         private final double[] target;
     }
+
 }

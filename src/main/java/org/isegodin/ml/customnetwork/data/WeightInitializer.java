@@ -15,7 +15,7 @@ public class WeightInitializer {
             for (int n = 0; n < layer.getNodes().length; n++) {
                 NeuralNetworkData.Node node = layer.getNodes()[n];
 
-                int inputSize = node.getWeights().length;
+                int inputSize = node.getWeights().length - 1; // bias weight is always last
 
                 double from = - 1 / Math.sqrt(inputSize);
                 double to = 1 / Math.sqrt(inputSize);
@@ -23,9 +23,12 @@ public class WeightInitializer {
                 DoubleStream random = new Random().doubles(from, to).limit(inputSize);
                 PrimitiveIterator.OfDouble iterator = random.iterator();
 
-                for (int i = 0; i < node.getWeights().length; i++) {
+                for (int i = 0; i < inputSize; i++) {
+                    // TODO ensure weight can not be zero (dead neuron)
                     node.getWeights()[i] = iterator.next();
                 }
+
+                node.getWeights()[node.getWeights().length - 1] = 0; // initial bias weight should be zero
             }
         }
     }

@@ -29,6 +29,10 @@ public class NetworkBuilder {
     }
 
     public NeuralNetworkData build() {
+        if (inputSize == 0 || outputSize == 0) {
+            throw new IllegalStateException("Empty network builder");
+        }
+
         List<NeuralNetworkData.Layer> layers = new LinkedList<>();
 
         int layerInputSize = inputSize + 1; // 1 additional bias input

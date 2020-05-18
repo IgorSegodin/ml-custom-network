@@ -77,11 +77,15 @@ public class NeuralNetworkBackpropagationAlgorithm {
             layerWeightedNodeErrorSum[l] = weightedSum;
         }
 
+        return calcTotalError(target, resultData.getFinalOut());
+    }
+
+    public static double calcTotalError(double[] target, double[] out) {
         double totalError = 0;
 
-        for (int i = 0; i < resultData.getFinalOut().length; i++) {
+        for (int i = 0; i < out.length; i++) {
             double t = target[i];
-            double o = resultData.getFinalOut()[i];
+            double o = out[i];
 
             totalError += Math.pow(t - o, 2) / 2;
         }

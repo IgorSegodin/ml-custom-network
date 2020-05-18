@@ -43,36 +43,61 @@ public class SimpleNeuralNetwork {
         this.epoch = epoch;
     }
 
-    //    public double[] feedForward(double[] input) {
-//        return null;
-//    }
+    public double evaluate(List<TrainData> dataList) {
+        int correct = 0;
 
-    public double evaluate(List<TrainData> testDataList) {
-        double totalErrorSum = 0;
-
-        for (TrainData trainData : testDataList) {
+        for (TrainData trainData : dataList) {
             FeedforwardResultData calcResult = NeuralNetworkResultCalculator.calcResult(trainData.getInput(), data);
 
-            totalErrorSum += NeuralNetworkBackpropagationAlgorithm.calcTotalError(trainData.getTarget(), calcResult.getFinalOut());
+            int valueIdx = findMaxValueIndex(calcResult.getFinalOut());
+
+            if (trainData.getTarget()[valueIdx] == 1) {
+                correct++;
+            }
         }
 
-        return totalErrorSum / testDataList.size();
+        return (double) correct / dataList.size();
     }
 
-    public double train(List<TrainData> trainDataList, double alpha) {
-        double totalErrorSum = 0;
+    public double train(List<TrainData> dataList, double alpha) {
+        int correct = 0;
 
-        for (TrainData trainData : trainDataList) {
+        for (TrainData trainData : dataList) {
             FeedforwardResultData calcResult = NeuralNetworkResultCalculator.calcResult(trainData.getInput(), data);
 
-            totalErrorSum += NeuralNetworkBackpropagationAlgorithm.train(trainData.getTarget(), calcResult, data, alpha);
+            int valueIdx = findMaxValueIndex(calcResult.getFinalOut());
+
+            if (trainData.getTarget()[valueIdx] == 1) {
+                correct++;
+            }
+
+            NeuralNetworkBackpropagationAlgorithm.train(trainData.getTarget(), calcResult, data, alpha);
         }
 
-        return totalErrorSum / trainDataList.size();
+        return (double) correct / dataList.size();
+    }
+
+    private int findMaxValueIndex(double[] array) {
+        double maxValue = array[0];
+        int idx = 0;
+
+        for (int i = 1; i < array.length; i++) {
+            double val = array[i];
+            if (val > maxValue) {
+                maxValue = val;
+                idx = i;
+            }
+        }
+
+        return idx;
     }
 
     public void addEpoch() {
         epoch++;
+    }
+
+    public int getEpoch() {
+        return epoch;
     }
 
     @SneakyThrows
@@ -143,12 +168,4 @@ public class SimpleNeuralNetwork {
         private int epoch;
     }
 
-
-//    @Getter
-//    @Builder
-//    public static class TrainConfig {
-//
-////        private final
-//
-//    }
 }

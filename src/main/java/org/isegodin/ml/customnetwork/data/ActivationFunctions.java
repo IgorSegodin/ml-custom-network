@@ -22,6 +22,11 @@ public enum ActivationFunctions {
     SIGMOID(
             (net) -> 1.0 / (1.0 + Math.exp(-net)),
             (out) -> out * (1 - out)
+    ),
+
+    ReLU(
+            (net) -> Math.max(0, net),
+            (out) -> out > 0 ? 1d : 0d
     );
 
     private final Function<Double, Double> function;

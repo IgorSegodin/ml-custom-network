@@ -10,12 +10,10 @@ import java.awt.image.Raster;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 /**
  * @author isegodin
@@ -40,92 +38,52 @@ public class App {
         return map;
     }
 
+    /*
+        I 784
+        L 128 relu
+        L 64 relu
+        O 10 softmax
+     */
 
     @SneakyThrows
     public static void main(String[] args) {
         SimpleNeuralNetwork neuralNetwork = SimpleNeuralNetwork.loadLatestOrNew(
                 MODEL_FOLDER,
                 () -> NetworkBuilder.builder(28 * 28, 10)
-                        .addLayer(15)
+                        .addLayer(128)
+                        .addLayer(64)
         );
 
-        final AtomicLong alpha = new AtomicLong(Double.doubleToLongBits(0.5));
+        List<SimpleNeuralNetwork.TrainData> trainData = Files.list(Paths.get(MNIST_FOLDER, "train"))
+                .map(App::extractTranDataFromImage)
+                .collect(Collectors.toList());
 
-        final int chunkSize = 100;
-        final AtomicInteger batchCounter = new AtomicInteger();
-        final List<SimpleNeuralNetwork.TrainData> trainDataList = new ArrayList<>(chunkSize);
 
-        double avgError = 1;
-        boolean first = true;
+        List<SimpleNeuralNetwork.TrainData> testData = Files.list(Paths.get(MNIST_FOLDER, "test"))
+                .map(App::extractTranDataFromImage)
+                .collect(Collectors.toList());
 
-        while (avgError > 0.3) {
+        System.out.println("Data loaded");
 
-            trainDataList.clear();
-            batchCounter.set(0);
+        double alpha = 0.001;
 
-            Files.list(Paths.get(MNIST_FOLDER, "train"))
-                    .forEach(p -> {
-                        if (batchCounter.getAndIncrement() % chunkSize == 0 && !trainDataList.isEmpty()) {
+        double fit = neuralNetwork.evaluate(testData);
 
-                            neuralNetwork.train(trainDataList, Double.longBitsToDouble(alpha.get()));
+        while (fit < 0.98) {
 
-                            trainDataList.clear();
-                        }
-
-                        trainDataList.add(
-                                extractTranDataFromImage(p)
-                        );
-                    });
+            neuralNetwork.train(trainData, alpha);
 
             neuralNetwork.addEpoch();
 
-            neuralNetwork.save(MODEL_FOLDER);
-
-
-            trainDataList.clear();
-            batchCounter.set(0);
-
-            AtomicLong totalError = new AtomicLong();
-            AtomicInteger count = new AtomicInteger();
-
-
-            Files.list(Paths.get(MNIST_FOLDER, "test"))
-                    .forEach(p -> {
-                        if (batchCounter.getAndIncrement() % chunkSize == 0 && !trainDataList.isEmpty()) {
-
-                            double error = neuralNetwork.evaluate(trainDataList);
-
-                            count.getAndIncrement();
-
-                            totalError.set(
-                                    Double.doubleToLongBits(error + Double.longBitsToDouble(totalError.get()))
-                            );
-
-                            trainDataList.clear();
-                        }
-
-                        trainDataList.add(
-                                extractTranDataFromImage(p)
-                        );
-                    });
-
-            double newError = Double.longBitsToDouble(totalError.get()) / count.get();
-
-            if (!first) {
-
-                double newAlpha = Double.longBitsToDouble(alpha.get());
-                newAlpha += newAlpha * (avgError - newError) / avgError * -1;
-                newAlpha = Math.min(0.5, newAlpha);
-
-                alpha.set(Double.doubleToLongBits(newAlpha));
+            if (neuralNetwork.getEpoch() % 10 == 0) {
+                neuralNetwork.save(MODEL_FOLDER);
             }
 
-            avgError = newError;
+            fit = neuralNetwork.evaluate(testData);
 
-            first = false;
-
-            System.out.println("Test avgError = " + avgError + ", alpha = " + Double.longBitsToDouble(alpha.get()));
+            System.out.println("Test fit = " + fit + ", epoch = " + neuralNetwork.getEpoch());
         }
+        neuralNetwork.save(MODEL_FOLDER);
     }
 
     @SneakyThrows

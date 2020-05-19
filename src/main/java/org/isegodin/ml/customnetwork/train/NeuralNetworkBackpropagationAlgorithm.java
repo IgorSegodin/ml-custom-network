@@ -32,7 +32,7 @@ public class NeuralNetworkBackpropagationAlgorithm {
                 double nodeError;
 
                 double nodeOut = resultData.getLayerData()[l].getOut()[n];
-                double derivativeNodeOut = ActivationFunctions.SIGMOID.calcDerivative(nodeOut);
+                double derivativeNodeOut = layer.getFunction().calcDerivative(nodeOut);
 
                 if (l == networkData.getLayers().length - 1) {
                     double nodeTarget = target[n];

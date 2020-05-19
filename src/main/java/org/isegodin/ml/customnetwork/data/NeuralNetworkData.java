@@ -19,6 +19,7 @@ public class NeuralNetworkData {
     @NoArgsConstructor
     public static class Layer {
         private Node[] nodes;
+        private ActivationFunctions function;
     }
 
     @Data

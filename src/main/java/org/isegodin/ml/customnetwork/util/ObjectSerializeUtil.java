@@ -1,4 +1,4 @@
-package org.isegodin.ml.customnetwork;
+package org.isegodin.ml.customnetwork.util;
 
 import lombok.SneakyThrows;
 

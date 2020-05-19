@@ -11,20 +11,26 @@ import java.util.List;
 public class NetworkBuilder {
 
     private final int inputSize;
-    private final int outputSize;
+    private int outputSize;
+    private ActivationFunctions outputFunc;
     private final List<LayerInfo> layerInfoList = new LinkedList<>();
 
-    private NetworkBuilder(int inputSize, int outputSize) {
+    private NetworkBuilder(int inputSize) {
         this.inputSize = inputSize;
-        this.outputSize = outputSize;
     }
 
-    public static NetworkBuilder builder(int inputSize, int outputSize) {
-        return new NetworkBuilder(inputSize, outputSize);
+    public static NetworkBuilder builder(int inputSize) {
+        return new NetworkBuilder(inputSize);
     }
 
-    public NetworkBuilder addLayer(int size) {
-        layerInfoList.add(new LayerInfo(size));
+    public NetworkBuilder addLayer(int size, ActivationFunctions func) {
+        layerInfoList.add(new LayerInfo(size, func));
+        return this;
+    }
+
+    public NetworkBuilder output(int size,  ActivationFunctions func) {
+        outputSize = size;
+        outputFunc = func;
         return this;
     }
 
@@ -38,7 +44,7 @@ public class NetworkBuilder {
         int layerInputSize = inputSize + 1; // 1 additional bias input
 
         for (LayerInfo l : layerInfoList) {
-            NeuralNetworkData.Layer layer = new NeuralNetworkData.Layer(new NeuralNetworkData.Node[l.getSize()]);
+            NeuralNetworkData.Layer layer = new NeuralNetworkData.Layer(new NeuralNetworkData.Node[l.getSize()], l.getFunc());
             layers.add(layer);
 
             for (int n = 0; n < layer.getNodes().length; n++) {
@@ -48,7 +54,7 @@ public class NetworkBuilder {
             layerInputSize = l.getSize() + 1; // 1 additional bias input
         }
 
-        NeuralNetworkData.Layer outLayer = new NeuralNetworkData.Layer(new NeuralNetworkData.Node[outputSize]);
+        NeuralNetworkData.Layer outLayer = new NeuralNetworkData.Layer(new NeuralNetworkData.Node[outputSize], outputFunc);
         layers.add(outLayer);
 
         for (int n = 0; n < outLayer.getNodes().length; n++) {
@@ -65,5 +71,6 @@ public class NetworkBuilder {
     @Data
     private static class LayerInfo {
         private final int size;
+        private final ActivationFunctions func;
     }
 }

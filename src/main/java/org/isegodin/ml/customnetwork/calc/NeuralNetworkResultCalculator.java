@@ -34,7 +34,7 @@ public class NeuralNetworkResultCalculator {
                 NeuralNetworkData.Node node = layer.getNodes()[n];
 
                 double nodeNetResult = calcNodeNet(currentInput, node);
-                layerOutResult[n] = ActivationFunctions.SIGMOID.calcOut(nodeNetResult);
+                layerOutResult[n] = layer.getFunction().calcOut(nodeNetResult);
             }
 
             if (l < networkData.getLayers().length - 1) {

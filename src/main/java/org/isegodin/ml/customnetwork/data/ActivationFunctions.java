@@ -29,6 +29,8 @@ public enum ActivationFunctions {
             (out) -> out > 0 ? 1d : 0d
     );
 
+//    SOFTMAX
+
     private final Function<Double, Double> function;
     private final Function<Double, Double> derivative;
 

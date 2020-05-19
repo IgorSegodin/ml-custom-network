@@ -3,6 +3,7 @@ package org.isegodin.ml.customnetwork;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.isegodin.ml.customnetwork.calc.NeuralNetworkResultCalculator;
+import org.isegodin.ml.customnetwork.data.ActivationFunctions;
 import org.isegodin.ml.customnetwork.data.FeedforwardResultData;
 import org.isegodin.ml.customnetwork.data.NetworkBuilder;
 import org.isegodin.ml.customnetwork.data.NeuralNetworkData;
@@ -23,8 +24,9 @@ class XorTest {
     @Test
     void testSuccess() {
 
-        Supplier<NeuralNetworkData> networkInitializer = () -> NetworkBuilder.builder(2, 1)
-                .addLayer(2)
+        Supplier<NeuralNetworkData> networkInitializer = () -> NetworkBuilder.builder(2)
+                .addLayer(2, ActivationFunctions.SIGMOID)
+                .output(1, ActivationFunctions.SIGMOID)
                 .build();
 
         NeuralNetworkData neuralNetworkData = networkInitializer.get();

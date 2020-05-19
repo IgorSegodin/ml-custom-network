@@ -1,6 +1,7 @@
 package org.isegodin.ml.customnetwork;
 
 import lombok.SneakyThrows;
+import org.isegodin.ml.customnetwork.data.ActivationFunctions;
 import org.isegodin.ml.customnetwork.data.NetworkBuilder;
 import org.isegodin.ml.customnetwork.network.SimpleNeuralNetwork;
 
@@ -18,7 +19,7 @@ import java.util.stream.Collectors;
 /**
  * @author isegodin
  */
-public class App {
+public class TrainNetworkApp {
 
     private static final String MODEL_FOLDER = "/Users/isegodin/GitHub/machine-learning-custom-network/models";
     private static final String MNIST_FOLDER = "/Users/isegodin/GitHub/machine-learning-custom-network/mnist";
@@ -49,18 +50,20 @@ public class App {
     public static void main(String[] args) {
         SimpleNeuralNetwork neuralNetwork = SimpleNeuralNetwork.loadLatestOrNew(
                 MODEL_FOLDER,
-                () -> NetworkBuilder.builder(28 * 28, 10)
-                        .addLayer(128)
-                        .addLayer(64)
+                () -> NetworkBuilder.builder(28 * 28)
+                        .addLayer(256, ActivationFunctions.ReLU)
+                        .addLayer(64, ActivationFunctions.ReLU)
+                        .addLayer(32, ActivationFunctions.SIGMOID)
+                        .output(10, ActivationFunctions.SIGMOID)
         );
 
         List<SimpleNeuralNetwork.TrainData> trainData = Files.list(Paths.get(MNIST_FOLDER, "train"))
-                .map(App::extractTranDataFromImage)
+                .map(TrainNetworkApp::extractTranDataFromImage)
                 .collect(Collectors.toList());
 
 
         List<SimpleNeuralNetwork.TrainData> testData = Files.list(Paths.get(MNIST_FOLDER, "test"))
-                .map(App::extractTranDataFromImage)
+                .map(TrainNetworkApp::extractTranDataFromImage)
                 .collect(Collectors.toList());
 
         System.out.println("Data loaded");

@@ -10,6 +10,7 @@ import org.isegodin.ml.customnetwork.data.FeedforwardResultData;
 import org.isegodin.ml.customnetwork.data.NetworkBuilder;
 import org.isegodin.ml.customnetwork.data.NeuralNetworkData;
 import org.isegodin.ml.customnetwork.train.NeuralNetworkBackpropagationAlgorithm;
+import org.isegodin.ml.customnetwork.util.ArrayUtil;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -41,6 +42,11 @@ public class SimpleNeuralNetwork {
         this.networkBuilder = networkBuilder;
         this.data = data;
         this.epoch = epoch;
+    }
+
+    public double[] feedForward(double[] input) {
+        FeedforwardResultData calcResult = NeuralNetworkResultCalculator.calcResult(input, data);
+        return calcResult.getFinalOut();
     }
 
     public double evaluate(List<TrainData> dataList) {
@@ -78,18 +84,7 @@ public class SimpleNeuralNetwork {
     }
 
     private int findMaxValueIndex(double[] array) {
-        double maxValue = array[0];
-        int idx = 0;
-
-        for (int i = 1; i < array.length; i++) {
-            double val = array[i];
-            if (val > maxValue) {
-                maxValue = val;
-                idx = i;
-            }
-        }
-
-        return idx;
+        return ArrayUtil.findMaxValueIndex(array);
     }
 
     public void addEpoch() {
@@ -138,6 +133,14 @@ public class SimpleNeuralNetwork {
         byte[] bytes = Files.readAllBytes(Paths.get(pathToFolder, f.getFilename()));
         NeuralNetworkData networkData = objectMapper.readValue(bytes, NeuralNetworkData.class);
         return new SimpleNeuralNetwork(builderSupplier.get(), networkData, f.getEpoch());
+    }
+
+    @SneakyThrows
+    public static SimpleNeuralNetwork loadFromFile(String pathToFile) {
+        // TODO refactor save names, use same method for loading one and multiple files
+        byte[] bytes = Files.readAllBytes(Paths.get(pathToFile));
+        NeuralNetworkData networkData = objectMapper.readValue(bytes, NeuralNetworkData.class);
+        return new SimpleNeuralNetwork(null, networkData, 0);
     }
 
     @SneakyThrows

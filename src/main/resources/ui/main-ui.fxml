@@ -17,7 +17,7 @@
             onMouseReleased="#onCanvasDrawRelease"
             onMouseDragged="#onCanvasDrawMove"/>
 
-    <HBox>
+    <HBox spacing="10">
         <Button text="Clear" onAction="#clearCanvas"/>
 
         <Label fx:id="predictionLabel" text="Unknown"/>

@@ -1,8 +1,8 @@
 package org.isegodin.ml.customnetwork;
 
 import lombok.SneakyThrows;
-import org.isegodin.ml.customnetwork.data.ActivationFunctions;
-import org.isegodin.ml.customnetwork.data.NetworkBuilder;
+import org.isegodin.ml.customnetwork.network.data.ActivationFunctions;
+import org.isegodin.ml.customnetwork.network.data.NetworkBuilder;
 import org.isegodin.ml.customnetwork.network.SimpleNeuralNetwork;
 
 import javax.imageio.ImageIO;

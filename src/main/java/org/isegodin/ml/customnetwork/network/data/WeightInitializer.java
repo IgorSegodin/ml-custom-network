@@ -1,4 +1,4 @@
-package org.isegodin.ml.customnetwork.data;
+package org.isegodin.ml.customnetwork.network.data;
 
 import java.util.PrimitiveIterator;
 import java.util.Random;

@@ -13,6 +13,7 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Transform;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.isegodin.ml.customnetwork.network.SimpleNeuralNetwork;
 import org.isegodin.ml.customnetwork.util.ArrayUtil;
@@ -25,7 +26,10 @@ import java.nio.file.Paths;
 /**
  * @author isegodin
  */
+@RequiredArgsConstructor
 public class MainUiController {
+
+    private final MainConfig config;
 
     private SimpleNeuralNetwork neuralNetwork;
 
@@ -43,7 +47,7 @@ public class MainUiController {
     public void initialize() {
         clearCanvas(null);
 
-        neuralNetwork = SimpleNeuralNetwork.loadFromFile("epoch-10-fit-0_9766-i784-l256_relu-l64_relu-l32_sigmoid-o10_sigmoid.json");
+        neuralNetwork = SimpleNeuralNetwork.loadFromFile(config.getNeuralNetworkModelFilePath());
     }
 
     @FXML
@@ -106,7 +110,7 @@ public class MainUiController {
         ImageIO.write(
                 renderedImage,
                 "png",
-                Paths.get("/Users/isegodin/GitHub/machine-learning-custom-network/draw_image.png").toFile()
+                Paths.get(config.getResizedImageFilePath()).toFile()
         );
 
         double[] input = imageToInput(renderedImage);
@@ -117,7 +121,6 @@ public class MainUiController {
 
         return null;
     }
-
 
     @SneakyThrows
     private static double[] imageToInput(RenderedImage image) {

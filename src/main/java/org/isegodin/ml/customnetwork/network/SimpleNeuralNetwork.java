@@ -5,11 +5,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.isegodin.ml.customnetwork.calc.NeuralNetworkResultCalculator;
-import org.isegodin.ml.customnetwork.data.FeedforwardResultData;
-import org.isegodin.ml.customnetwork.data.NetworkBuilder;
-import org.isegodin.ml.customnetwork.data.NeuralNetworkData;
-import org.isegodin.ml.customnetwork.train.NeuralNetworkBackpropagationAlgorithm;
+import org.isegodin.ml.customnetwork.network.calc.NeuralNetworkResultCalculator;
+import org.isegodin.ml.customnetwork.network.data.FeedforwardResultData;
+import org.isegodin.ml.customnetwork.network.data.NetworkBuilder;
+import org.isegodin.ml.customnetwork.network.data.NeuralNetworkData;
+import org.isegodin.ml.customnetwork.network.train.NeuralNetworkBackpropagationAlgorithm;
 import org.isegodin.ml.customnetwork.util.ArrayUtil;
 
 import java.nio.file.Files;

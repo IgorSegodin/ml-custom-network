@@ -1,9 +1,8 @@
-package org.isegodin.ml.customnetwork.calc;
+package org.isegodin.ml.customnetwork.network.calc;
 
 import lombok.Data;
-import org.isegodin.ml.customnetwork.data.ActivationFunctions;
-import org.isegodin.ml.customnetwork.data.FeedforwardResultData;
-import org.isegodin.ml.customnetwork.data.NeuralNetworkData;
+import org.isegodin.ml.customnetwork.network.data.FeedforwardResultData;
+import org.isegodin.ml.customnetwork.network.data.NeuralNetworkData;
 
 /**
  * @author isegodin

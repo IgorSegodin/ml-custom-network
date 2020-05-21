@@ -1,4 +1,4 @@
-package org.isegodin.ml.customnetwork.train;
+package org.isegodin.ml.customnetwork.network.train;
 
 /**
  * @author isegodin

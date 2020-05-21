@@ -1,4 +1,4 @@
-package org.isegodin.ml.customnetwork.data;
+package org.isegodin.ml.customnetwork.network.data;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;

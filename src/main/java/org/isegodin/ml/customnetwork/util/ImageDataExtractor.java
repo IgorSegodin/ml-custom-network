@@ -90,8 +90,8 @@ public class ImageDataExtractor {
             scale = (double) targetSize / input.getWidth();
         }
 
-        int scaledWidth = Double.valueOf(input.getWidth() * scale).intValue();
-        int scaledHeight = Double.valueOf(input.getHeight() * scale).intValue();
+        int scaledWidth = (int) Math.round(input.getWidth() * scale);
+        int scaledHeight = (int) Math.round(input.getHeight() * scale);
 
         BufferedImage scaledImage = new BufferedImage(scaledWidth, scaledHeight, BufferedImage.TYPE_BYTE_GRAY);
         scaledImage.createGraphics()

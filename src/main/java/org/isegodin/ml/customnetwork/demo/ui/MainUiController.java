@@ -5,23 +5,16 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
 import javafx.scene.SnapshotParameters;
-import javafx.scene.SnapshotResult;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
-import javafx.scene.transform.Transform;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-import org.isegodin.ml.customnetwork.network.SimpleNeuralNetwork;
-import org.isegodin.ml.customnetwork.util.ArrayUtil;
 
-import javax.imageio.ImageIO;
-import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
-import java.nio.file.Paths;
+import java.util.function.Function;
 
 /**
  * @author isegodin
@@ -29,9 +22,7 @@ import java.nio.file.Paths;
 @RequiredArgsConstructor
 public class MainUiController {
 
-    private final MainConfig config;
-
-    private SimpleNeuralNetwork neuralNetwork;
+    private final Function<RenderedImage, Integer> predictNumberFunction;
 
     @FXML
     private Label predictionLabel;
@@ -46,8 +37,6 @@ public class MainUiController {
     @FXML
     public void initialize() {
         clearCanvas(null);
-
-        neuralNetwork = SimpleNeuralNetwork.loadFromFile(config.getNeuralNetworkModelFilePath());
     }
 
     @FXML
@@ -70,7 +59,7 @@ public class MainUiController {
 
         predictionLabel.setText("...");
 
-        predictNumber(null);
+        predictNumber();
     }
 
     @FXML
@@ -80,62 +69,34 @@ public class MainUiController {
 
         if (draw && previousPoint != null) {
             GraphicsContext context2D = canvas.getGraphicsContext2D();
-            context2D.setStroke(Color.RED);
+            context2D.setStroke(Color.WHITE);
             context2D.setLineWidth(16);
             context2D.strokeLine(previousPoint.getX(), previousPoint.getY(), cursorPoint.getX(), cursorPoint.getY());
         }
     }
 
-    @FXML
-    private void predictNumber(ActionEvent actionEvent) {
-        WritableImage image = new WritableImage(28, 28);
+    private void predictNumber() {
+        WritableImage image = new WritableImage(
+                (int)canvas.getWidth(),
+                (int)canvas.getHeight()
+        );
 
-        SnapshotParameters params = new SnapshotParameters();
-
-        params.setTransform(Transform.scale(
-                28 / canvas.getWidth(),
-                28 / canvas.getHeight()
-        ));
+//        SnapshotParameters params = new SnapshotParameters();
+//
+//        params.setTransform(Transform.scale(
+//                28 / canvas.getWidth(),
+//                28 / canvas.getHeight()
+//        ));
 
         canvas.snapshot(
-                this::processImage,
-                params,
+                (snapshotResult) -> {
+                    RenderedImage renderedImage = SwingFXUtils.fromFXImage(snapshotResult.getImage(), null);
+                    int result = predictNumberFunction.apply(renderedImage);
+                    predictionLabel.setText("Result: " + result);
+                    return null;
+                },
+                new SnapshotParameters(),
                 image
         );
-    }
-
-    @SneakyThrows
-    private Void processImage(SnapshotResult snapshotResult) {
-        RenderedImage renderedImage = SwingFXUtils.fromFXImage(snapshotResult.getImage(), null);
-        ImageIO.write(
-                renderedImage,
-                "png",
-                Paths.get(config.getResizedImageFilePath()).toFile()
-        );
-
-        double[] input = imageToInput(renderedImage);
-
-        double[] out = neuralNetwork.feedForward(input);
-
-        predictionLabel.setText("Result: " + ArrayUtil.findMaxValueIndex(out));
-
-        return null;
-    }
-
-    @SneakyThrows
-    private static double[] imageToInput(RenderedImage image) {
-        Raster imageData = image.getData();
-
-        double[] input = new double[image.getHeight() * image.getWidth()];
-
-        for (int y = 0; y < image.getHeight(); y++) {
-            for (int x = 0; x < image.getWidth(); x++) {
-                int idx = x + y * image.getWidth();
-
-                input[idx] = imageData.getPixel(x, y, new int[4])[0];
-            }
-        }
-
-        return input;
     }
 }

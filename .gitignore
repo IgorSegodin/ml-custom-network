@@ -1,2 +1,5 @@
 .idea
 *.iml
+mnist
+models
+debug

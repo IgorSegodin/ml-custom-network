@@ -2,11 +2,12 @@ package org.isegodin.ml.customnetwork;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.isegodin.ml.customnetwork.calc.NeuralNetworkResultCalculator;
-import org.isegodin.ml.customnetwork.data.FeedforwardResultData;
-import org.isegodin.ml.customnetwork.data.NetworkBuilder;
-import org.isegodin.ml.customnetwork.data.NeuralNetworkData;
-import org.isegodin.ml.customnetwork.train.NeuralNetworkBackpropagationAlgorithm;
+import org.isegodin.ml.customnetwork.network.calc.NeuralNetworkResultCalculator;
+import org.isegodin.ml.customnetwork.network.data.ActivationFunctions;
+import org.isegodin.ml.customnetwork.network.data.FeedforwardResultData;
+import org.isegodin.ml.customnetwork.network.data.NetworkBuilder;
+import org.isegodin.ml.customnetwork.network.data.NeuralNetworkData;
+import org.isegodin.ml.customnetwork.network.train.NeuralNetworkBackpropagationAlgorithm;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -23,8 +24,9 @@ class XorTest {
     @Test
     void testSuccess() {
 
-        Supplier<NeuralNetworkData> networkInitializer = () -> NetworkBuilder.builder(2, 1)
-                .addLayer(2)
+        Supplier<NeuralNetworkData> networkInitializer = () -> NetworkBuilder.builder(2)
+                .addLayer(2, ActivationFunctions.SIGMOID)
+                .output(1, ActivationFunctions.SIGMOID)
                 .build();
 
         NeuralNetworkData neuralNetworkData = networkInitializer.get();

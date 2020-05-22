@@ -1,24 +1,27 @@
 package org.isegodin.ml.customnetwork;
 
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.isegodin.ml.customnetwork.network.SimpleNeuralNetwork;
 import org.isegodin.ml.customnetwork.network.data.ActivationFunctions;
 import org.isegodin.ml.customnetwork.network.data.NetworkBuilder;
-import org.isegodin.ml.customnetwork.network.SimpleNeuralNetwork;
+import org.isegodin.ml.customnetwork.util.ImageDataExtractor;
 
 import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.awt.image.Raster;
+import java.awt.image.RenderedImage;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
  * @author isegodin
  */
+@Slf4j
 public class TrainNetworkApp {
 
     private static final String MODEL_FOLDER = "/Users/isegodin/GitHub/machine-learning-custom-network/models";
@@ -38,6 +41,8 @@ public class TrainNetworkApp {
         }
         return map;
     }
+
+    private static long lastSaveTimeMillis = 0;
 
     /*
         I 784
@@ -66,25 +71,27 @@ public class TrainNetworkApp {
                 .map(TrainNetworkApp::extractTranDataFromImage)
                 .collect(Collectors.toList());
 
-        System.out.println("Data loaded");
+        log.info("Data loaded");
 
         double alpha = 0.001;
 
         double fit = neuralNetwork.evaluate(testData);
 
-        while (fit < 0.98) {
+        while (fit < 0.99) {
 
             neuralNetwork.train(trainData, alpha);
 
             neuralNetwork.addEpoch();
 
-            if (neuralNetwork.getEpoch() % 10 == 0) {
+            // Save model not more often than each 30 seconds
+            if (System.currentTimeMillis() - lastSaveTimeMillis > TimeUnit.SECONDS.toMillis(30)) {
                 neuralNetwork.save(MODEL_FOLDER);
+                lastSaveTimeMillis = System.currentTimeMillis();
             }
 
             fit = neuralNetwork.evaluate(testData);
 
-            System.out.println("Test fit = " + fit + ", epoch = " + neuralNetwork.getEpoch());
+            log.info("Test fit = " + fit + ", epoch = " + neuralNetwork.getEpoch());
         }
         neuralNetwork.save(MODEL_FOLDER);
     }
@@ -97,18 +104,9 @@ public class TrainNetworkApp {
                 filenameWithoutExtension.split("-")[1].substring("num".length())
         );
 
-        BufferedImage bufferedImage = ImageIO.read(imagePath.toFile());
-        Raster imageData = bufferedImage.getData();
+        RenderedImage processedImage = ImageDataExtractor.preProcessImage(ImageIO.read(imagePath.toFile()), 28);
 
-        double[] input = new double[bufferedImage.getHeight() * bufferedImage.getWidth()];
-
-        for (int y = 0; y < bufferedImage.getHeight(); y++) {
-            for (int x = 0; x < bufferedImage.getWidth(); x++) {
-                int idx = x + y * bufferedImage.getWidth();
-
-                input[idx] = imageData.getPixel(x, y, new int[1])[0];
-            }
-        }
+        double[] input = ImageDataExtractor.extractImageData(processedImage);
 
         return new SimpleNeuralNetwork.TrainData(input, digitTargetMap.get(number));
     }

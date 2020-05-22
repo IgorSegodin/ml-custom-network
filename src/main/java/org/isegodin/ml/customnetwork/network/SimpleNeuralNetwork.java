@@ -139,6 +139,11 @@ public class SimpleNeuralNetwork {
     public static SimpleNeuralNetwork loadFromFile(String pathToFile) {
         // TODO refactor save names, use same method for loading one and multiple files
         byte[] bytes = Files.readAllBytes(Paths.get(pathToFile));
+        return loadFromBytes(bytes);
+    }
+
+    @SneakyThrows
+    public static SimpleNeuralNetwork loadFromBytes(byte[] bytes) {
         NeuralNetworkData networkData = objectMapper.readValue(bytes, NeuralNetworkData.class);
         return new SimpleNeuralNetwork(null, networkData, 0);
     }

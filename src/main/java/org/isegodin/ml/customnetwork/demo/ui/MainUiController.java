@@ -50,6 +50,8 @@ public class MainUiController {
     private void onCanvasDrawPress(MouseEvent mouseEvent) {
         draw = true;
         this.cursorPoint = new Point2D(mouseEvent.getX(), mouseEvent.getY());
+
+        predictionLabel.setText("...");
     }
 
     @FXML
@@ -70,7 +72,7 @@ public class MainUiController {
         if (draw && previousPoint != null) {
             GraphicsContext context2D = canvas.getGraphicsContext2D();
             context2D.setStroke(Color.WHITE);
-            context2D.setLineWidth(16);
+            context2D.setLineWidth(8);
             context2D.strokeLine(previousPoint.getX(), previousPoint.getY(), cursorPoint.getX(), cursorPoint.getY());
         }
     }

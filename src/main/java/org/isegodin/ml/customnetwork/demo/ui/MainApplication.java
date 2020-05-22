@@ -21,14 +21,17 @@ public class MainApplication extends Application {
 
     private int imageSize = 28;
 
-    private String modelPath = "/Users/isegodin/GitHub/machine-learning-custom-network/epoch-10-fit-0_9766-i784-l256_relu-l64_relu-l32_sigmoid-o10_sigmoid.json";
-    private String tempProcessedImagePath = "/Users/isegodin/GitHub/machine-learning-custom-network/debug/processed_image.png";
+//    private String modelPath = "/Users/isegodin/GitHub/machine-learning-custom-network/models/epoch-36.json"; // 0.9814
+//    private String tempProcessedImagePath = "/Users/isegodin/GitHub/machine-learning-custom-network/debug/processed_image.png";
 
     private SimpleNeuralNetwork neuralNetwork;
 
     @Override
     public void start(Stage stage) throws Exception {
-        neuralNetwork = SimpleNeuralNetwork.loadFromFile(modelPath);
+//        neuralNetwork = SimpleNeuralNetwork.loadFromFile(modelPath);
+        neuralNetwork = SimpleNeuralNetwork.loadFromBytes(
+                getClass().getResource("/model/epoch-36.json").openStream().readAllBytes()
+        );
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/main-ui.fxml"));
 
@@ -47,7 +50,7 @@ public class MainApplication extends Application {
     private Integer predictNumber(RenderedImage rawImage) {
         RenderedImage processedImage = ImageDataExtractor.preProcessImage(rawImage, imageSize);
 
-        ImageIO.write(processedImage, "png", new File(tempProcessedImagePath));
+//        ImageIO.write(processedImage, "png", new File(tempProcessedImagePath));
 
         double[] out = neuralNetwork.feedForward(ImageDataExtractor.extractImageData(processedImage));
 
